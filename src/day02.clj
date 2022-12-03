@@ -41,6 +41,18 @@
        (map round-score)
        (apply +)))
 
+(def fixes {:rock :lose
+            :paper :draw
+            :scissors :win})
+
+(defn fix-guide [guide]
+  (map (fn [[them me]] [them (fixes me)])
+       guide))
+
+(defn expected-score-real [guide]
+  0)
+
 (defn -main []
   (let [guide (read-input)]
-    (println "Part 1:" (expected-score guide))))
+    (println "Part 1:" (expected-score guide))
+    (println "Part 2:" (expected-score-real (fix-guide guide)))))
