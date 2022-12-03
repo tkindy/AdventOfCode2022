@@ -14,6 +14,10 @@
        (map #(apply + %1))
        (apply max)))
 
+(defn top-3-calories [elves]
+  0)
+
 (defn -main []
   (let [elves (read-input)]
-    (println "Part 1:" (most-calories elves))))
+    (println "Part 1:" (most-calories elves))
+    (println "Part 2:" (top-3-calories elves))))
