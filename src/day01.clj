@@ -15,7 +15,11 @@
        (apply max)))
 
 (defn top-3-calories [elves]
-  0)
+  (->> elves
+       (map #(apply + %1))
+       (sort (comparator >))
+       (take 3)
+       (apply +)))
 
 (defn -main []
   (let [elves (read-input)]
