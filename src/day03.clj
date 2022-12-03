@@ -22,12 +22,13 @@
                         (set right))
       first))
 
-(def lower-priorities (->> (range (int \a) (inc (int \z)))
-                           (map (fn [i] [(char i) (+ (- i (int \a)) 1)]))
-                           (into {})))
-(def upper-priorities (->> (range (int \A) (inc (int \Z)))
-                           (map (fn [i] [(char i) (+ (- i (int \A)) 27)]))
-                           (into {})))
+(defn calc-priorities [start end base]
+  (->> (range (int start) (inc (int end)))
+       (map (fn [i] [(char i) (+ (- i (int start)) base)]))
+       (into {})))
+
+(def lower-priorities (calc-priorities \a \z 1))
+(def upper-priorities (calc-priorities \A \Z 27))
 
 (def priorities (merge lower-priorities upper-priorities))
 
