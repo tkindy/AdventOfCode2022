@@ -21,15 +21,15 @@
                   :paper 2
                   :scissors 3})
 
-(def beats {:rock :paper
-            :paper :scissors
-            :scissors :rock})
+(def beats {:paper :rock
+            :scissors :paper
+            :rock :scissors})
 
 (defn outcome-score [[them me]]
   (cond
     (= them me) 3
-    (= them (beats me)) 0
-    :else 6))
+    (= them (beats me)) 6
+    :else 0))
 
 (defn round-score [round]
   (let [[_ me] round]
