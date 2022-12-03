@@ -7,3 +7,7 @@
 (deftest split-item-priority-sum
   (is (= (day03/split-item-priority-sum example)
          157)))
+
+(deftest badge-priority-sum
+  (is (= (day03/badge-priority-sum example)
+         70)))

@@ -38,6 +38,24 @@
        (map priorities)
        (apply +)))
 
+(defn all-items [[left right]]
+  (set/union (set left)
+             (set right)))
+
+(defn find-badge [group]
+  (->> group
+       (map all-items)
+       (apply set/intersection)
+       first))
+
+(defn badge-priority-sum [rucksacks]
+  (->> rucksacks
+       (partition 3)
+       (map find-badge)
+       (map priorities)
+       (apply +)))
+
 (defn -main []
   (let [rucksacks (read-input)]
-    (println "Part 1:" (split-item-priority-sum rucksacks))))
+    (println "Part 1:" (split-item-priority-sum rucksacks))
+    (println "Part 2:" (badge-priority-sum rucksacks))))
