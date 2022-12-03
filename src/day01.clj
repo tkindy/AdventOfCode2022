@@ -1,13 +1,18 @@
-(ns day01)
+(ns day01
+  (:require [clojure.string :as str]))
 
 (defn parse-input [input]
-  [])
+  (->> (str/split input #"\n\n")
+       (map str/split-lines)
+       (map #(map parse-long %1))))
 
 (defn read-input []
   (parse-input (slurp "inputs/day01.txt")))
 
 (defn most-calories [elves]
-  0)
+  (->> elves
+       (map #(apply + %1))
+       (apply max)))
 
 (defn -main []
   (let [elves (read-input)]
