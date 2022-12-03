@@ -49,8 +49,25 @@
   (map (fn [[them me]] [them (fixes me)])
        guide))
 
+(def beaten-by (->> beats
+                    (map (fn [[k v]] [v k]))
+                    (into {})))
+
+(defn my-shape [[them outcome]]
+  (case outcome
+    :win  (beaten-by them)
+    :lose (beats them)
+    :draw them))
+
+(defn real-round-score [round]
+  (let [me (my-shape round)
+        [them _] round]
+    (round-score [them me])))
+
 (defn expected-score-real [guide]
-  0)
+  (->> guide
+       (map real-round-score)
+       (apply +)))
 
 (defn -main []
   (let [guide (read-input)]
