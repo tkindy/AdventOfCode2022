@@ -17,8 +17,29 @@
 (defn read-input []
   (parse-input (slurp "inputs/day02.txt")))
 
+(def shape-score {:rock 1
+                  :paper 2
+                  :scissors 3})
+
+(def beats {:rock :paper
+            :paper :scissors
+            :scissors :rock})
+
+(defn outcome-score [[them me]]
+  (cond
+    (= them me) 3
+    (= them (beats me)) 0
+    :else 6))
+
+(defn round-score [round]
+  (let [[_ me] round]
+    (+ (shape-score me)
+       (outcome-score round))))
+
 (defn expected-score [guide]
-  0)
+  (->> guide
+       (map round-score)
+       (apply +)))
 
 (defn -main []
   (let [guide (read-input)]
