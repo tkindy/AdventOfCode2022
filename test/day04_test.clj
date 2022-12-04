@@ -7,3 +7,7 @@
 (deftest subset-count
   (is (= (day04/subset-count example)
          2)))
+
+(deftest overlap-count
+  (is (= (day04/overlap-count example)
+         4)))

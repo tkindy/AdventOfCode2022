@@ -30,6 +30,17 @@
        (filter has-subset)
        count))
 
+(defn overlap? [[left right]]
+  (let [left (assignment-set left)
+        right (assignment-set right)]
+    (seq (set/intersection left right))))
+
+(defn overlap-count [pairs]
+  (->> pairs
+       (filter overlap?)
+       count))
+
 (defn -main []
   (let [pairs (read-input)]
-    (println "Part 1:" (subset-count pairs))))
+    (println "Part 1:" (subset-count pairs))
+    (println "Part 2:" (overlap-count pairs))))
