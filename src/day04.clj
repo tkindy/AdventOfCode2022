@@ -1,7 +1,16 @@
-(ns day04)
+(ns day04
+  (:require [clojure.string :as str]))
+
+(defn parse-assignment [assignment]
+  (let [[start end] (str/split assignment "-")]
+    [(parse-long start) (inc (parse-long end))]))
+
+(defn parse-pair [pair]
+  (let [[p1 p2] (str/split pair ",")]
+    [(parse-assignment p1) (parse-assignment p2)]))
 
 (defn parse-input [input]
-  (throw (RuntimeException. "Not yet implemented")))
+  (map parse-pair (str/split-lines (str/trim input))))
 
 (defn read-input []
   (parse-input (slurp "inputs/day04.txt")))
