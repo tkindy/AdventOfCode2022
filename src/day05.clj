@@ -48,10 +48,8 @@
 (defn read-input []
   (parse-input (slurp "inputs/day05.txt")))
 
-(defn do-step [stacks {:keys [count from to]}]
-  (let [to-move (->> (get stacks from)
-                     (take count)
-                     reverse)]
+(defn do-step [stacks {:keys [count from to]} to-move-fn]
+  (let [to-move (to-move-fn (get stacks from) count)]
     (-> stacks
         (update from (fn [stack] (drop count stack)))
         (update to (fn [stack] (concat to-move stack))))))
@@ -63,10 +61,25 @@
        (map first)
        (apply str)))
 
-(defn end-tops [{:keys [start procedure]}]
-  (-> (reduce do-step start procedure)
+(defn run-procedure [{:keys [start procedure]} to-move-fn]
+  (-> (reduce (fn [stacks step] (do-step stacks step to-move-fn))
+              start
+              procedure)
       tops))
+
+(defn to-move [stack count]
+  (reverse (take count stack)))
+
+(defn end-tops [input]
+  (run-procedure input to-move))
+
+(defn upgraded-to-move [stack count]
+  (take count stack))
+
+(defn upgraded-end-tops [input]
+  (run-procedure input upgraded-to-move))
 
 (defn -main []
   (let [input (read-input)]
-    (println "Part 1:" (end-tops input))))
+    (println "Part 1:" (end-tops input))
+    (println "Part 2:" (upgraded-end-tops input))))

@@ -31,3 +31,7 @@
 (deftest end-tops
   (is (= (day05/end-tops example)
          "CMZ")))
+
+(deftest upgraded-end-tops
+  (is (= (day05/upgraded-end-tops example)
+         "MCD")))
