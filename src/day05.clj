@@ -48,8 +48,24 @@
 (defn read-input []
   (parse-input (slurp "inputs/day05.txt")))
 
-(defn end-tops [input]
-  (throw (RuntimeException. "Not yet implemented")))
+(defn do-step [stacks {:keys [count from to]}]
+  (let [to-move (->> (get stacks from)
+                     (take count)
+                     reverse)]
+    (-> stacks
+        (update from (fn [stack] (drop count stack)))
+        (update to (fn [stack] (concat to-move stack))))))
+
+(defn tops [stacks]
+  (->> stacks
+       (sort-by key)
+       (map val)
+       (map first)
+       (apply str)))
+
+(defn end-tops [{:keys [start procedure]}]
+  (-> (reduce do-step start procedure)
+      tops))
 
 (defn -main []
   (let [input (read-input)]
