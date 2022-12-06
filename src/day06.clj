@@ -7,20 +7,25 @@
 (defn read-input []
   (parse-input (slurp "inputs/day06.txt")))
 
-(def packet-length 4)
-
 (defn all-unique [coll]
   (= (count (set coll))
      (count coll)))
 
-(defn packet-start-distance [datastream]
-  (let [marker-start (->> (partition packet-length 1 datastream)
+(defn all-unique-index [length datastream]
+  (let [marker-start (->> (partition length 1 datastream)
                           (map-indexed vector)
                           (filter (comp all-unique second))
                           first
                           first)]
-    (+ marker-start packet-length)))
+    (+ marker-start length)))
+
+(defn packet-start-distance [datastream]
+  (all-unique-index 4 datastream))
+
+(defn message-start-distance [datastream]
+  (all-unique-index 14 datastream))
 
 (defn -main []
   (let [datastream (read-input)]
-    (println "Part 1:" (packet-start-distance datastream))))
+    (println "Part 1:" (packet-start-distance datastream))
+    (println "Part 2:" (message-start-distance datastream))))
