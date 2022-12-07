@@ -58,10 +58,10 @@
          ["a" "b" "c"])))
 
 (def path-gen
-  (gen/fmap (fn [v] (str "/" (str/join "/" v)))
-            (gen/vector (gen/such-that not-empty gen/string-alphanumeric)
-                        0
-                        10)))
+  (let [path-segment  (gen/such-that not-empty gen/string-alphanumeric)
+        path-segments (gen/vector path-segment 0 10)]
+    (gen/fmap (fn [v] (str "/" (str/join "/" v)))
+              path-segments)))
 
 (declare cd-up-retains-prefix)
 (defspec cd-up-retains-prefix
