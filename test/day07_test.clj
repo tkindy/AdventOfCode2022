@@ -30,6 +30,15 @@
            :arg "/"
            :output []}])))
 
+(deftest change-directory
+  (is (= (day07/change-directory {:path "/a/b/c"
+                                  :root {:contents {}}}
+                                 {:command :cd
+                                  :arg ".."
+                                  :output []})
+         {:path "/a/b"
+          :root {:contents {}}})))
+
 (deftest parse-input
   (is (= (day07/parse-input (slurp "examples/day07.txt"))
          example)))
