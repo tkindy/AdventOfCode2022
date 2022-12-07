@@ -2,7 +2,6 @@
   (:require day07
             [clojure.test :refer [deftest is]]))
 
-(def example-parsed (day07/parse-input (slurp "examples/day07.txt")))
 (def example {:contents
               {"a" {:contents
                     {"e" {:contents
@@ -18,8 +17,22 @@
                      "d.ext" {:size 5626152}
                      "k" {:size 7214296}}}}})
 
+(deftest split-execution
+  (is (= (day07/split-execution ["$ cd /"])
+         [{:command :cd
+           :arg "/"
+           :output []}
+          []])))
+
+(deftest split-executions
+  (is (= (day07/split-executions ["$ cd /"])
+         [{:command :cd
+           :arg "/"
+           :output []}])))
+
 (deftest parse-input
-  (is (= example-parsed example)))
+  (is (= (day07/parse-input (slurp "examples/day07.txt"))
+         example)))
 
 (deftest small-dirs-size
   (is (= (day07/small-dirs-size example)

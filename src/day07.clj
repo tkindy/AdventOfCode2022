@@ -15,8 +15,10 @@
      (drop (inc (count output)) lines)]))
 
 (defn split-executions [lines]
-  (let [[execution rest] (split-execution lines)]
-    (cons execution (split-executions rest))))
+  (if (empty? lines)
+    nil
+    (let [[execution rest] (split-execution lines)]
+      (cons execution (split-executions rest)))))
 
 (defn split-path [path]
   (rest (str/split path #"/")))
