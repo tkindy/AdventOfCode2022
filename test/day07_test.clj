@@ -1,6 +1,11 @@
 (ns day07-test
   (:require day07
-            [clojure.test :refer [deftest is]]))
+            [clojure.string :as str]
+            [clojure.test :refer [deftest is]]
+            [clojure.test.check :as tc]
+            [clojure.test.check.generators :as gen]
+            [clojure.test.check.properties :as prop]
+            [clojure.test.check.clojure-test :refer [defspec]]))
 
 (def example {:contents
               {"a" {:contents
@@ -29,6 +34,28 @@
          [{:command :cd
            :arg "/"
            :output []}])))
+
+(def path-gen
+  (gen/fmap (fn [v] (str "/" (str/join "/" v)))
+            (gen/vector (gen/such-that not-empty gen/string-ascii)
+                        0
+                        10)))
+
+(declare cd-up-retains-prefix)
+(defspec cd-up-retains-prefix
+  1000
+  (prop/for-all [path path-gen]
+                (let [up (day07/cd-up path)]
+                  (str/starts-with? path up))))
+
+(declare cd-up-makes-shorter)
+(defspec cd-up-makes-shorter
+  1000
+  (prop/for-all [path path-gen]
+                (let [up (day07/cd-up path)]
+                  (or (= path "/")
+                      (< (count up)
+                         (count path))))))
 
 (deftest change-directory
   (is (= (day07/change-directory {:path "/a/b/c"
