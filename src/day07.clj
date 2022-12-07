@@ -103,6 +103,10 @@
        (filter #(<= % 100000))
        (apply +)))
 
+(defn delete-dir-size [root]
+  0)
+
 (defn -main []
   (let [root (read-input)]
-    (println "Part 1:" (small-dirs-size root))))
+    (println "Part 1:" (small-dirs-size root))
+    (println "Part 2:" (delete-dir-size root))))

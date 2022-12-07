@@ -204,3 +204,7 @@
 (deftest small-dirs-size
   (is (= (day07/small-dirs-size example)
          95437)))
+
+(deftest delete-dir-size
+  (is (= (day07/delete-dir-size example)
+         24933642)))
