@@ -175,6 +175,32 @@
     (slurp "examples/day07.txt")
     example))
 
+(deftest dir->seq
+  (is (= (day07/dir->seq {:contents
+                          {"a" {:contents
+                                {"b" {:size 123}}}
+                           "c" {:size 456}}})
+         [{:contents
+           {"a" {:contents
+                 {"b" {:size 123}}}
+            "c" {:size 456}}}
+          {:contents
+           {"b" {:size 123}}}
+          {:size 123}
+          {:size 456}])))
+
+(deftest total-size
+  (is (= (day07/total-size {:contents {}})
+         0))
+  (is (= (day07/total-size {:contents
+                            {"a" {:size 123}}})
+         123))
+  (is (= (day07/total-size {:contents
+                            {"a" {:size 123}
+                             "b" {:contents
+                                  {"c" {:size 456}}}}})
+         579)))
+
 (deftest small-dirs-size
   (is (= (day07/small-dirs-size example)
          95437)))

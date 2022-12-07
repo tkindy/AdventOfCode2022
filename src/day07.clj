@@ -75,8 +75,33 @@
 (defn read-input []
   (parse-input (slurp "inputs/day07.txt")))
 
+(defn dir->seq [dir]
+  (letfn [(helper [dir]
+            (->> dir
+                 :contents
+                 vals
+                 (map (juxt identity helper))
+                 flatten))]
+    (concat [dir] (helper dir))))
+
+(defn total-size [f]
+  (if (not (:contents f))
+    (:size f)
+    (->> (:contents f)
+         vals
+         (map total-size)
+         (apply +))))
+
+(defn dir-sizes [dir]
+  (->> (dir->seq dir)
+       (filter :contents)
+       (map total-size)))
+
 (defn small-dirs-size [root]
-  (throw (RuntimeException. "Not yet implemented")))
+  (->> root
+       dir-sizes
+       (filter #(<= % 100000))
+       (apply +)))
 
 (defn -main []
   (let [root (read-input)]
