@@ -65,14 +65,14 @@
 
 (declare cd-up-retains-prefix)
 (defspec cd-up-retains-prefix
-  1000
+  100
   (prop/for-all [path path-gen]
                 (let [up (day07/cd-up path)]
                   (str/starts-with? path up))))
 
 (declare cd-up-makes-shorter)
 (defspec cd-up-makes-shorter
-  1000
+  100
   (prop/for-all [path path-gen]
                 (let [up (day07/cd-up path)]
                   (or (= path "/")
