@@ -33,7 +33,9 @@
   (let [new-path (case arg
                    "/" "/"
                    ".." (cd-up path)
-                   (str path "/" arg))]
+                   (if (= path "/")
+                     (str "/" arg)
+                     (str path "/" arg)))]
     (assoc state :path new-path)))
 
 (defn parse-file [line]
