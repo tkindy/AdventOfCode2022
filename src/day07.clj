@@ -103,8 +103,17 @@
        (filter #(<= % 100000))
        (apply +)))
 
+(def total-space 70000000)
+(def space-needed-for-update 30000000)
+(def max-used (- total-space space-needed-for-update))
+
 (defn delete-dir-size [root]
-  0)
+  (let [used-space (total-size root)
+        need-to-free (- used-space max-used)]
+    (->> root
+         dir-sizes
+         (filter #(>= % need-to-free))
+         (apply min))))
 
 (defn -main []
   (let [root (read-input)]
