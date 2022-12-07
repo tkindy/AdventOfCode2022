@@ -50,10 +50,10 @@
   (mapcat (fn [key] [:contents key])
           (split-path path)))
 
-(defn capture-files [{:keys [path root]} {:keys [output]}]
+(defn capture-files [{:keys [path] :as state} {:keys [output]}]
   (let [files (parse-files output)]
-    (update-in root
-               (concat (path->keys path) [:contents])
+    (update-in state
+               (concat [:root] (path->keys path) [:contents])
                merge files)))
 
 (defn process-execution [state {:keys [command] :as execution}]
