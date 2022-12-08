@@ -13,8 +13,16 @@
 (defn read-input []
   (parse-input (slurp "inputs/day08.txt")))
 
+(defn grid->seq [grid]
+  (for [y (range (count grid))
+        x (range (count (first grid)))]
+    [[x y] (get-in grid [y x])]))
+
 (defn num-visible [grid]
-  (throw (RuntimeException. "Not yet implemented")))
+  (->> grid
+       grid->seq
+       (filter (fn [tree] (visible? tree grid)))
+       count))
 
 (defn -main []
   (let [grid (read-input)]
