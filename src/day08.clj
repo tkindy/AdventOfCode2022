@@ -18,25 +18,44 @@
         x (range (count (first grid)))]
     {:x x, :y y, :height (get-in grid [y x])}))
 
-(defn on-edge? [[x y] grid]
+(defn on-edge? [{:keys [x y]} grid]
   (or (= x 0)
       (= x (dec (count (first grid))))
       (= y 0)
       (= y (dec (count grid)))))
 
-(defn check-spot [visible
+(defn update-tallest [tallest {:keys [height] :as spot} keyfn]
+  (update tallest
+          (keyfn spot)
+          (fn [cur] (max height (or cur -1)))))
+
+(defn tallest-row [tallest spot]
+  (update-tallest tallest spot :y))
+
+(defn tallest-column [tallest spot]
+  (update-tallest tallest spot :x))
+
+(defn check-spot [[visible tallest-rows tallest-columns]
                   {:keys [x y height] :as spot}
                   grid]
-  (if (on-edge? [x y] grid)
-    (conj visible [x y])
-    visible))
+  [visible
+   (tallest-row tallest-rows spot)
+   (tallest-column tallest-columns spot)])
 
 (defn find-visible [grid]
-  (->> grid
-       grid->seq
-       (reduce (fn [visible spot]
-                 (check-spot visible spot grid))
-               #{})))
+  (let [buckets (->> grid
+                     grid->seq
+                     (group-by (fn [spot] (on-edge? spot grid))))
+        edges (buckets true)
+        interior (buckets false)
+        tallest-rows (reduce tallest-row [] edges)
+        tallest-columns (reduce tallest-column [] edges)]
+    (->> interior
+         (reduce (fn [state spot]
+                   (check-spot state spot grid))
+                 [#{} tallest-rows tallest-columns])
+         first
+         (concat edges))))
 
 (defn num-visible [grid]
   (count (find-visible grid)))
