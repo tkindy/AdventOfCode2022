@@ -24,3 +24,7 @@
 (deftest num-visible
   (is (= (day08/num-visible example)
          21)))
+
+(deftest max-scenic
+  (is (= (day08/max-scenic example)
+         8)))

@@ -106,6 +106,10 @@
 (defn num-visible [grid]
   (count (find-visible grid)))
 
+(defn max-scenic [grid]
+  0)
+
 (defn -main []
   (let [grid (read-input)]
-    (println "Part 1:" (num-visible grid))))
+    (println "Part 1:" (num-visible grid))
+    (println "Part 2:" (max-scenic grid))))
