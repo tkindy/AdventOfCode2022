@@ -1,5 +1,6 @@
 (ns day08
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.set :as set]))
 
 (defn parse-line [line]
   (mapv (comp parse-long str) line))
@@ -24,38 +25,39 @@
       (= y 0)
       (= y (dec (count grid)))))
 
-(defn update-tallest [tallest {:keys [height] :as spot} keyfn]
-  (update tallest
-          (keyfn spot)
-          (fn [cur] (max height (or cur -1)))))
+(defn visible-up? [{:keys [x height]} tallest]
+  (> height (get tallest x)))
 
-(defn tallest-row [tallest spot]
-  (update-tallest tallest spot :y))
+(defn update-tallest-up [tallest {:keys [x height]}]
+  (update tallest x max height))
 
-(defn tallest-column [tallest spot]
-  (update-tallest tallest spot :x))
+(defn visible-up [[visible tallest] spot]
+  [(if (visible-up? spot tallest)
+     (conj visible spot)
+     visible)
+   (update-tallest-up tallest spot)])
 
-(defn check-spot [[visible tallest-rows tallest-columns]
-                  {:keys [x y height] :as spot}
-                  grid]
-  [visible
-   (tallest-row tallest-rows spot)
-   (tallest-column tallest-columns spot)])
+(defn build-tallest-up [edges]
+  (->> edges
+       (filter (comp zero? :y))
+       (mapv :height)))
+
+(defn find-visible-up [[interior edges]]
+  (->> interior
+       (reduce visible-up [#{} (build-tallest-up edges)])
+       first))
+
+(defn split-edges [grid]
+  (let [buckets (group-by (fn [spot] (on-edge? spot grid))
+                          (grid->seq grid))]
+    [(buckets false) (buckets true)]))
 
 (defn find-visible [grid]
-  (let [buckets (->> grid
-                     grid->seq
-                     (group-by (fn [spot] (on-edge? spot grid))))
-        edges (buckets true)
-        interior (buckets false)
-        tallest-rows (reduce tallest-row [] edges)
-        tallest-columns (reduce tallest-column [] edges)]
-    (->> interior
-         (reduce (fn [state spot]
-                   (check-spot state spot grid))
-                 [#{} tallest-rows tallest-columns])
-         first
-         (concat edges))))
+  (let [splits (split-edges grid)
+        [_ edges] splits
+        up    (find-visible-up splits)]
+    (set/union up
+               (set edges))))
 
 (defn num-visible [grid]
   (count (find-visible grid)))
