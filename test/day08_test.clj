@@ -17,6 +17,10 @@
          #{{:x 1, :y 1, :height 5}
            {:x 2, :y 1, :height 5}})))
 
+(deftest find-visible-down
+  (is (= (day08/find-visible-down (day08/split-edges example) (count example))
+         #{{:x 2, :y 3, :height 5}})))
+
 (deftest num-visible
   (is (= (day08/num-visible example)
          21)))

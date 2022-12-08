@@ -47,6 +47,30 @@
        (reduce visible-up [#{} (build-tallest-up edges)])
        first))
 
+(defn visible-down? [{:keys [x height]} tallest]
+  (> height (get tallest x)))
+
+(defn update-tallest-down [tallest {:keys [x height]}]
+  (update tallest x max height))
+
+(defn visible-down [[visible tallest] spot]
+  [(if (visible-down? spot tallest)
+     (conj visible spot)
+     visible)
+   (update-tallest-down tallest spot)])
+
+(defn build-tallest-down [edges grid-size]
+  (->> edges
+       (filter (fn [{:keys [y]}] (= y (dec grid-size))))
+       (mapv :height)))
+
+(defn find-visible-down [[interior edges] grid-size]
+  (->> interior
+       (sort-by :y)
+       reverse
+       (reduce visible-down [#{} (build-tallest-down edges grid-size)])
+       first))
+
 (defn split-edges [grid]
   (let [buckets (group-by (fn [spot] (on-edge? spot grid))
                           (grid->seq grid))]
@@ -55,8 +79,15 @@
 (defn find-visible [grid]
   (let [splits (split-edges grid)
         [_ edges] splits
-        up    (find-visible-up splits)]
+        grid-size (count grid)
+        up    (find-visible-up splits)
+        down  (find-visible-down splits grid-size)
+        left  (find-visible-left splits)
+        right (find-visible-right splits)]
     (set/union up
+               down
+               left
+               right
                (set edges))))
 
 (defn num-visible [grid]
