@@ -69,6 +69,21 @@
                     (fn [{:keys [y]}] (= y (dec grid-size)))
                     :x))
 
+(defn find-visible-left [state]
+  (find-visible-dir state
+                    identity
+                    (comp zero? :x)
+                    :y))
+
+(defn find-visible-right [state grid-size]
+  (find-visible-dir state
+                    (fn [interior]
+                      (->> interior
+                           (sort-by :x)
+                           reverse))
+                    (fn [{:keys [x]}] (= x (dec grid-size)))
+                    :y))
+
 (defn split-edges [grid]
   (let [buckets (group-by (fn [spot] (on-edge? spot grid))
                           (grid->seq grid))]
@@ -81,7 +96,7 @@
         up    (find-visible-up splits)
         down  (find-visible-down splits grid-size)
         left  (find-visible-left splits)
-        right (find-visible-right splits)]
+        right (find-visible-right splits grid-size)]
     (set/union up
                down
                left
