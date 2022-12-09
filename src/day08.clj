@@ -19,16 +19,11 @@
         x (range (count (first grid)))]
     {:x x, :y y, :height (get-in grid [y x])}))
 
-(defn on-edge? [{:keys [x y]} grid]
-  (or (= x 0)
-      (= x (dec (count (first grid))))
-      (= y 0)
-      (= y (dec (count grid)))))
-
-(defn build-tallest [edges first-line?]
-  (->> edges
-       (filter first-line?)
-       (mapv :height)))
+(defn build-tallest [grid]
+  (->> grid
+       count
+       range
+       (mapv (constantly -1))))
 
 (defn visible? [{:keys [height] :as spot}
                 tallest
@@ -46,62 +41,50 @@
      visible)
    (update-tallest tallest spot coord-key)])
 
-(defn find-visible-dir [[interior edges] sort-fn first-line? coord-key]
-  (->> interior
+(defn find-visible-dir [grid sort-fn coord-key]
+  (->> grid
+       grid->seq
        sort-fn
-       (reduce (fn [state spot]
-                 (visible state spot coord-key))
-               [#{} (build-tallest edges first-line?)])
+       (reduce (fn [acc spot]
+                 (visible acc spot coord-key))
+               [#{} (build-tallest grid)])
        first))
 
-(defn find-visible-up [state]
-  (find-visible-dir state
+(defn find-visible-up [grid]
+  (find-visible-dir grid
                     identity
-                    (comp zero? :y)
                     :x))
 
-(defn find-visible-down [state grid-size]
-  (find-visible-dir state
-                    (fn [interior]
-                      (->> interior
+(defn find-visible-down [grid]
+  (find-visible-dir grid
+                    (fn [grid-seq]
+                      (->> grid-seq
                            (sort-by :y)
                            reverse))
-                    (fn [{:keys [y]}] (= y (dec grid-size)))
                     :x))
 
-(defn find-visible-left [state]
-  (find-visible-dir state
+(defn find-visible-left [grid]
+  (find-visible-dir grid
                     identity
-                    (comp zero? :x)
                     :y))
 
-(defn find-visible-right [state grid-size]
-  (find-visible-dir state
-                    (fn [interior]
-                      (->> interior
+(defn find-visible-right [grid]
+  (find-visible-dir grid
+                    (fn [grid-seq]
+                      (->> grid-seq
                            (sort-by :x)
                            reverse))
-                    (fn [{:keys [x]}] (= x (dec grid-size)))
                     :y))
 
-(defn split-edges [grid]
-  (let [buckets (group-by (fn [spot] (on-edge? spot grid))
-                          (grid->seq grid))]
-    [(buckets false) (buckets true)]))
-
 (defn find-visible [grid]
-  (let [splits (split-edges grid)
-        [_ edges] splits
-        grid-size (count grid)
-        up    (find-visible-up splits)
-        down  (find-visible-down splits grid-size)
-        left  (find-visible-left splits)
-        right (find-visible-right splits grid-size)]
+  (let [up    (find-visible-up grid)
+        down  (find-visible-down grid)
+        left  (find-visible-left grid)
+        right (find-visible-right grid)]
     (set/union up
                down
                left
-               right
-               (set edges))))
+               right)))
 
 (defn num-visible [grid]
   (count (find-visible grid)))
