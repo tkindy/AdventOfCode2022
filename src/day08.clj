@@ -25,6 +25,29 @@
        sort-fn
        (reduce f val)))
 
+(defn up-reduce [f val grid]
+  (dir-reduce f val identity grid))
+
+(def left-reduce up-reduce)
+
+(defn down-reduce [f val grid]
+  (dir-reduce f
+              val
+              (fn [grid-seq]
+                (->> grid-seq
+                     (sort-by :y)
+                     reverse))
+              grid))
+
+(defn right-reduce [f val grid]
+  (dir-reduce f
+              val
+              (fn [grid-seq]
+                (->> grid-seq
+                     (sort-by :x)
+                     reverse))
+              grid))
+
 (defn build-tallest [grid]
   (->> grid
        count
@@ -47,45 +70,18 @@
      visible)
    (update-tallest tallest spot coord-key)])
 
-(defn find-visible-dir [grid sort-fn coord-key]
-  (->> grid
-       (dir-reduce (fn [acc spot]
-                     (visible acc spot coord-key))
-                   [#{} (build-tallest grid)]
-                   sort-fn)
-       first))
-
-(defn find-visible-up [grid]
-  (find-visible-dir grid
-                    identity
-                    :x))
-
-(defn find-visible-down [grid]
-  (find-visible-dir grid
-                    (fn [grid-seq]
-                      (->> grid-seq
-                           (sort-by :y)
-                           reverse))
-                    :x))
-
-(defn find-visible-left [grid]
-  (find-visible-dir grid
-                    identity
-                    :y))
-
-(defn find-visible-right [grid]
-  (find-visible-dir grid
-                    (fn [grid-seq]
-                      (->> grid-seq
-                           (sort-by :x)
-                           reverse))
-                    :y))
-
 (defn find-visible [grid]
-  (let [up    (find-visible-up grid)
-        down  (find-visible-down grid)
-        left  (find-visible-left grid)
-        right (find-visible-right grid)]
+  (let [val [#{} (build-tallest grid)]
+        builder (fn [r coord-key]
+                  (->> (r (fn [acc spot]
+                            (visible acc spot coord-key))
+                          val
+                          grid)
+                       first))
+        up    (builder up-reduce :x)
+        down  (builder down-reduce :x)
+        left  (builder left-reduce :y)
+        right (builder right-reduce :y)]
     (set/union up
                down
                left

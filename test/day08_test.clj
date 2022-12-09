@@ -38,8 +38,11 @@
          [#{{:x 0, :y 0, :height 3}}
           [3 -1 -1 -1 -1]])))
 
-(deftest find-visible-up
-  (is (= (day08/find-visible-up example)
+(deftest up-reduce
+  (is (= (first (day08/up-reduce (fn [acc spot]
+                                   (day08/visible acc spot :x))
+                                 [#{} (day08/build-tallest example)]
+                                 example))
          #{{:x 0, :y 0, :height 3}
            {:x 1, :y 0, :height 0}
            {:x 2, :y 0, :height 3}
@@ -50,17 +53,6 @@
            {:x 0, :y 2, :height 6}
            {:x 4, :y 3, :height 9}
            {:x 3, :y 4, :height 9}})))
-
-(deftest find-visible-down
-  (is (= (day08/find-visible-down example)
-         #{{:x 0, :y 4, :height 3}
-           {:x 1, :y 4, :height 5}
-           {:x 2, :y 4, :height 3}
-           {:x 3, :y 4, :height 9}
-           {:x 4, :y 4, :height 0}
-           {:x 2, :y 3, :height 5}
-           {:x 4, :y 3, :height 9}
-           {:x 0, :y 2, :height 6}})))
 
 (deftest num-visible
   (is (= (day08/num-visible example)
