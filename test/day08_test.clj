@@ -8,8 +8,6 @@
               [3 3 5 4 9]
               [3 5 3 9 0]])
 
-(day08/find-visible-up example)
-
 (deftest parse-input
   (is (= (day08/parse-input (slurp "examples/day08.txt"))
          example)))
