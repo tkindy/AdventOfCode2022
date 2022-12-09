@@ -19,6 +19,12 @@
         x (range (count (first grid)))]
     {:x x, :y y, :height (get-in grid [y x])}))
 
+(defn dir-reduce [f val sort-fn grid]
+  (->> grid
+       grid->seq
+       sort-fn
+       (reduce f val)))
+
 (defn build-tallest [grid]
   (->> grid
        count
@@ -43,11 +49,10 @@
 
 (defn find-visible-dir [grid sort-fn coord-key]
   (->> grid
-       grid->seq
-       sort-fn
-       (reduce (fn [acc spot]
-                 (visible acc spot coord-key))
-               [#{} (build-tallest grid)])
+       (dir-reduce (fn [acc spot]
+                     (visible acc spot coord-key))
+                   [#{} (build-tallest grid)]
+                   sort-fn)
        first))
 
 (defn find-visible-up [grid]
