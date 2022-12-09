@@ -90,8 +90,13 @@
 (defn num-visible [grid]
   (count (find-visible grid)))
 
+(defn all-scenics [grid]
+  [0])
+
 (defn max-scenic [grid]
-  0)
+  (->> grid
+       all-scenics
+       (apply max)))
 
 (defn -main []
   (let [grid (read-input)]
