@@ -12,7 +12,7 @@
                [:right 2]))
 
 (deftest parse-input
-  (is (= (day09/parse-input (slurp "examples/day09.txt"))
+  (is (= (day09/parse-input (slurp "examples/day09-1.txt"))
          example)))
 
 (deftest move
