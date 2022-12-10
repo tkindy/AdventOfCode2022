@@ -15,13 +15,29 @@
   (is (= (day09/parse-input (slurp "examples/day09-1.txt"))
          example)))
 
+(deftest move-one
+  (are [acc dir expected] (= (day09/move-one acc dir)
+                             expected)
+    [{:head {:x 0, :y 0}, :followers (list {:x 0, :y 0})}
+     #{{:x 0, :y 0}}]
+    :right
+    [{:head {:x 1, :y 0}, :followers (list {:x 0, :y 0})}
+     #{{:x 0, :y 0}}]
+
+    [{:head {:x 1, :y 0}, :followers (list {:x 0, :y 0})}
+     #{{:x 0, :y 0}}]
+    :right
+    [{:head {:x 2, :y 0}, :followers (list {:x 1, :y 0})}
+     #{{:x 0, :y 0}
+       {:x 1, :y 0}}]))
+
 (deftest move
   (are [acc motion expected] (= (day09/move acc motion)
                                 expected)
-    [{:head {:x 0, :y 0}, :tail {:x 0, :y 0}}
+    [{:head {:x 0, :y 0}, :followers (list {:x 0, :y 0})}
      #{{:x 0, :y 0}}]
     [:right 4]
-    [{:head {:x 4, :y 0}, :tail {:x 3, :y 0}}
+    [{:head {:x 4, :y 0}, :followers (list {:x 3, :y 0})}
      #{{:x 0, :y 0}
        {:x 1, :y 0}
        {:x 2, :y 0}

@@ -36,43 +36,57 @@
     (or (<= (+ adx ady) 1)
         (= 1 adx ady))))
 
-(defn do-move-tail [tail {:keys [dx dy]}]
+(defn do-move-follower [follower {:keys [dx dy]}]
   (cond
-    (zero? dx) (update tail :y + (/ dy (abs dy)))
-    (zero? dy) (update tail :x + (/ dx (abs dx)))
-    :else (-> tail
+    (zero? dx) (update follower :y + (/ dy (abs dy)))
+    (zero? dy) (update follower :x + (/ dx (abs dx)))
+    :else (-> follower
               (update :x + (/ dx (abs dx)))
               (update :y + (/ dy (abs dy))))))
 
-(defn move-tail [tail head]
-  (let [delta (delta head tail)]
+(defn move-follower [follower leader]
+  (let [delta (delta leader follower)]
     (if (touching? delta)
-      tail
-      (do-move-tail tail delta))))
+      follower
+      (do-move-follower follower delta))))
 
-(defn move-one [[{:keys [head tail]} visited] dir]
+(defn move-followers [followers head]
+  (->> followers
+       reverse
+       (reduce (fn [followers follower]
+                 (conj followers
+                       (move-follower follower (first followers))))
+               (list head))
+       drop-last))
+
+(defn move-one [[{:keys [head followers]} visited] dir]
   (let [head (move-head head dir)
-        tail (move-tail tail head)]
-    [{:head head, :tail tail}
-     (conj visited tail)]))
+        followers (move-followers followers head)]
+    [{:head head, :followers followers}
+     (conj visited (first followers))]))
 
 (defn move [acc [dir amount]]
   (->> (range amount)
        (reduce (fn [acc _] (move-one acc dir)) acc)))
 
-(defn visited [motions]
+(defn visited [rope motions]
   (let [[_ result] (reduce move
-                           [{:head {:x 0, :y 0}, :tail {:x 0, :y 0}}
-                            #{{:x 0, :y 0}}]
+                           [rope #{{:x 0, :y 0}}]
                            motions)]
     result))
 
+(defn build-rope [knots]
+  {:head {:x 0, :y 0}
+   :followers (map (constantly {:x 0, :y 0})
+                   (range (dec knots)))})
+
 (defn visited-count [motions]
-  (count (visited motions)))
+  (count (visited (build-rope 2) motions)))
 
 (defn long-visited-count [motions]
-  0)
+  (count (visited (build-rope 10) motions)))
 
 (defn -main []
   (let [motions (read-input)]
-    (println "Part 1:" (visited-count motions))))
+    (println "Part 1:" (visited-count motions))
+    (println "Part 2:" (long-visited-count motions))))
