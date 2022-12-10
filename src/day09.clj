@@ -2,14 +2,14 @@
   (:require [clojure.string :as str]))
 
 (defn parse-line [line]
-  (let [[dir count] (str/split line #" ")
+  (let [[dir amount] (str/split line #" ")
         dir (case dir
               "U" :up
               "D" :down
               "L" :left
               "R" :right)
-        count (parse-long count)]
-    [dir count]))
+        amount (parse-long amount)]
+    [dir amount]))
 
 (defn parse-input [input]
   (->> input
