@@ -46,8 +46,24 @@
 (defn num-visible [grid]
   (count (find-visible grid)))
 
+(defn num-trees [{:keys [height]} line]
+  (if (empty? line)
+    0
+    (->> line
+         (take-while #(< % height))
+         count
+         inc)))
+
+(defn scenic [{:keys [x y] :as spot} grid]
+  (* (num-trees spot (reverse (extract-row grid y 0 x)))
+     (num-trees spot (extract-row grid y (inc x) (count grid)))
+     (num-trees spot (reverse (extract-column grid x 0 y)))
+     (num-trees spot (extract-column grid x (inc y) (count grid)))))
+
 (defn all-scenics [grid]
-  [0])
+  (->> grid
+       grid->seq
+       (map (fn [spot] (scenic spot grid)))))
 
 (defn max-scenic [grid]
   (->> grid
