@@ -127,6 +127,13 @@
             (spot coord-key)
             (update-distance-index index spot depth))]))
 
+(defn all-scenics-builder [r coord-key depth-fn grid]
+  (->> (r (fn [acc spot]
+            (calc-distance acc spot coord-key depth-fn))
+          [{} (build-distance-index grid)]
+          grid)
+       first))
+
 (defn calc-scenics [distances]
   (->> distances
        (apply merge-with
@@ -137,18 +144,23 @@
        flatten))
 
 (defn all-scenics [grid]
-  (let [val [{} (build-distance-index grid)]
-        builder (fn [r coord-key depth-fn]
-                  (->> (r (fn [acc spot]
-                            (calc-distance acc spot coord-key depth-fn))
-                          val
-                          grid)
-                       first))
-        grid-size (count grid)
-        up (builder up-reduce :x :y)
-        down (builder down-reduce :x #(inc (- (:y %) grid-size)))
-        left (builder left-reduce :y :x)
-        right (builder right-reduce :y #(inc (- (:x %) grid-size)))]
+  (let [grid-size (count grid)
+        up (all-scenics-builder up-reduce
+                                :x
+                                :y
+                                grid)
+        down (all-scenics-builder down-reduce
+                                  :x
+                                  #(inc (- (:y %) grid-size))
+                                  grid)
+        left (all-scenics-builder left-reduce
+                                  :y
+                                  :x
+                                  grid)
+        right (all-scenics-builder right-reduce
+                                   :y
+                                   #(inc (- (:x %) grid-size))
+                                   grid)]
     (calc-scenics [up down left right])))
 
 (defn max-scenic [grid]
