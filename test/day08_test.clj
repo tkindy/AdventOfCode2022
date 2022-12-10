@@ -1,6 +1,6 @@
 (ns day08-test
   (:require day08
-            [clojure.test :refer [deftest is]]))
+            [clojure.test :refer [deftest is are]]))
 
 (def example [[3 0 3 7 3]
               [2 5 5 1 2]
@@ -63,6 +63,13 @@
                                 {7 0, 1 1, 3 2}
                                 3)
          3)))
+
+(deftest calc-distance
+  (let [f (day08/calc-distance-builder :x :y)]
+    (are [acc spot expected] (= (f acc spot) expected)
+      [{} [{} {} {} {} {}]]
+      {:x 0, :y 0, :height 3}
+      [{{:x 0, :y 0} 0} [{3 0} {} {} {} {}]])))
 
 (deftest max-scenic
   (is (= (day08/max-scenic example)
