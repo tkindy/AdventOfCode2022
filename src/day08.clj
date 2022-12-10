@@ -47,12 +47,13 @@
   (count (find-visible grid)))
 
 (defn num-trees [{:keys [height]} line]
-  (if (empty? line)
-    0
-    (->> line
-         (take-while #(< % height))
-         count
-         inc)))
+  (reduce (fn [count h]
+            (let [count (inc count)]
+              (if (< h height)
+                count
+                (reduced count))))
+          0
+          line))
 
 (defn line-up [{:keys [x y]} grid]
   (reverse (extract-column grid x 0 y)))
