@@ -28,6 +28,26 @@
   (is (= (day08/extract-column example 3 3 5)
          [4 9])))
 
+(deftest num-trees-up
+  (are [spot expected] (= (day08/num-trees-up spot example)
+                          expected)
+    {:x 2, :y 1, :height 5} 1))
+
+(deftest num-trees-down
+  (are [spot expected] (= (day08/num-trees-down spot example)
+                          expected)
+    {:x 2, :y 1, :height 5} 2))
+
+(deftest num-trees-left
+  (are [spot expected] (= (day08/num-trees-left spot example)
+                          expected)
+    {:x 2, :y 1, :height 5} 1))
+
+(deftest num-trees-right
+  (are [spot expected] (= (day08/num-trees-right spot example)
+                          expected)
+    {:x 2, :y 1, :height 5} 2))
+
 (deftest scenic
   (are [spot expected] (= (day08/scenic spot example)
                           expected)
