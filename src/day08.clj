@@ -1,6 +1,5 @@
 (ns day08
-  (:require [clojure.string :as str]
-            [clojure.set :as set]))
+  (:require [clojure.string :as str]))
 
 (defn parse-line [line]
   (mapv (comp parse-long str) line))
