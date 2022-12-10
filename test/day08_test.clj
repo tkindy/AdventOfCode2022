@@ -58,6 +58,12 @@
   (is (= (day08/num-visible example)
          21)))
 
+(deftest lookup-distance
+  (is (= (day08/lookup-distance {:x 3, :y 3, :height 4}
+                                {7 0, 1 1, 3 2}
+                                3)
+         3)))
+
 (deftest max-scenic
   (is (= (day08/max-scenic example)
          8)))

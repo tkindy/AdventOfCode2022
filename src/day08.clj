@@ -90,8 +90,66 @@
 (defn num-visible [grid]
   (count (find-visible grid)))
 
+(defn build-distance-index [grid]
+  (->> (range (count grid))
+       (mapv (constantly {}))))
+
+(defn lookup-distance [{:keys [height]}
+                       index
+                       depth]
+  (let [higher-depths (->> index
+                           keys
+                           (filter #(>= % height))
+                           (select-keys index)
+                           vals)
+        blocked-at (if (empty? higher-depths)
+                     0
+                     (apply max higher-depths))]
+    (- depth blocked-at)))
+
+(defn find-distance [distances
+                     index
+                     {:keys [x y] :as spot}
+                     depth]
+  (let [distance (lookup-distance spot index depth)]
+    (assoc-in distances [y x] distance)))
+
+(defn update-distance-index [index
+                             {:keys [height]}
+                             depth]
+  (assoc index height depth))
+
+(defn calc-distance [[distances indexes] spot coord-key depth-fn]
+  (let [depth (depth-fn spot)
+        index (get indexes (spot coord-key))]
+    [(find-distance distances index spot depth)
+     (assoc indexes
+            (spot coord-key)
+            (update-distance-index index spot depth))]))
+
+(defn calc-scenics [distances]
+  (->> distances
+       (apply merge-with
+              (fn [a b]
+                (merge-with * a b)))
+       vals
+       (map vals)
+       flatten))
+
 (defn all-scenics [grid]
-  [0])
+  (let [val [{} (build-distance-index grid)]
+        builder (fn [r coord-key depth-fn]
+                  (->> (r (fn [acc spot]
+                            (calc-distance acc spot coord-key depth-fn))
+                          val
+                          grid)
+                       first))
+        grid-size (count grid)
+        up (builder up-reduce :x :y)
+        down (builder down-reduce :x #(inc (- (:y %) grid-size)))
+        left (builder left-reduce :y :x)
+        right (builder right-reduce :y #(inc (- (:x %) grid-size)))]
+    (calc-scenics [up down left right])))
 
 (defn max-scenic [grid]
   (->> grid
