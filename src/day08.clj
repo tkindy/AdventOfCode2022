@@ -112,7 +112,7 @@
                      {:keys [x y] :as spot}
                      depth]
   (let [distance (lookup-distance spot index depth)]
-    (assoc-in distances [y x] distance)))
+    (assoc distances {:x x, :y y} distance)))
 
 (defn update-distance-index [index
                              {:keys [height]}
@@ -139,12 +139,8 @@
 
 (defn calc-scenics [distances]
   (->> distances
-       (apply merge-with
-              (fn [a b]
-                (merge-with * a b)))
-       vals
-       (map vals)
-       flatten))
+       (apply merge-with *)
+       vals))
 
 (defn all-scenics [grid]
   (let [grid-size (count grid)
