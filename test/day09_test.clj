@@ -30,3 +30,9 @@
 (deftest visited-count
   (is (= (day09/visited-count example)
          13)))
+
+(deftest long-visited-count
+  (is (= (day09/long-visited-count example)
+         1))
+  (is (= (day09/long-visited-count (day09/parse-input (slurp "examples/day09-2.txt")))
+         36)))

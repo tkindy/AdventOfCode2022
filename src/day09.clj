@@ -70,6 +70,9 @@
 (defn visited-count [motions]
   (count (visited motions)))
 
+(defn long-visited-count [motions]
+  0)
+
 (defn -main []
   (let [motions (read-input)]
     (println "Part 1:" (visited-count motions))))
