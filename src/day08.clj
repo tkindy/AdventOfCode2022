@@ -127,9 +127,12 @@
             (spot coord-key)
             (update-distance-index index spot depth))]))
 
+(defn calc-distance-builder [coord-key depth-fn]
+  (fn [acc spot]
+    (calc-distance acc spot coord-key depth-fn)))
+
 (defn all-scenics-builder [r coord-key depth-fn grid]
-  (->> (r (fn [acc spot]
-            (calc-distance acc spot coord-key depth-fn))
+  (->> (r (calc-distance-builder coord-key depth-fn)
           [{} (build-distance-index grid)]
           grid)
        first))
