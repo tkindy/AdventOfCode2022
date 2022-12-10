@@ -38,8 +38,8 @@
 
 (defn do-move-tail [tail {:keys [dx dy]}]
   (cond
-    (zero? dx) (update tail :y + dy)
-    (zero? dy) (update tail :x + dx)
+    (zero? dx) (update tail :y + (/ dy (abs dy)))
+    (zero? dy) (update tail :x + (/ dx (abs dx)))
     :else (-> tail
               (update :x + (/ dx (abs dx)))
               (update :y + (/ dy (abs dy))))))
