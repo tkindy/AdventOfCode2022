@@ -54,11 +54,23 @@
          count
          inc)))
 
-(defn scenic [{:keys [x y] :as spot} grid]
-  (* (num-trees spot (reverse (extract-row grid y 0 x)))
-     (num-trees spot (extract-row grid y (inc x) (count grid)))
-     (num-trees spot (reverse (extract-column grid x 0 y)))
-     (num-trees spot (extract-column grid x (inc y) (count grid)))))
+(defn num-trees-up [{:keys [x y] :as spot} grid]
+  (num-trees spot (reverse (extract-row grid y 0 x))))
+
+(defn num-trees-down [{:keys [x y] :as spot} grid]
+  (num-trees spot (extract-row grid y (inc x) (count grid))))
+
+(defn num-trees-left [{:keys [x y] :as spot} grid]
+  (num-trees spot (reverse (extract-column grid x 0 y))))
+
+(defn num-trees-right [{:keys [x y] :as spot} grid]
+  (num-trees spot (extract-column grid x (inc y) (count grid))))
+
+(defn scenic [spot grid]
+  (* (num-trees-up spot grid)
+     (num-trees-down spot grid)
+     (num-trees-left spot grid)
+     (num-trees-right spot grid)))
 
 (defn all-scenics [grid]
   (->> grid
