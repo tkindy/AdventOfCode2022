@@ -52,8 +52,62 @@
 (defn read-input []
   (parse-input (slurp "inputs/day11.txt")))
 
+(defn inspect-item [item {:keys [operation]}]
+  (->> operation
+       (map (fn [a] (if (= a 'old)
+                      item
+                      a)))
+       eval))
+
+(defn test-item [item {:keys [test]}]
+  (let [{:keys [divisor]} test
+        result (zero? (mod item divisor))]
+    (get test result)))
+
+(defn handle-item [item monkey monkeys]
+  (let [item (inspect-item item monkey)
+        item (unchecked-divide-int item 3)
+        destination (test-item item monkey)]
+    (update-in monkeys [destination :items] conj item)))
+
+(defn run-turn [monkey monkeys]
+  (println "Starting turn")
+  (reduce (fn [monkeys item]
+            (handle-item item monkey monkeys))
+          monkeys
+          (:items monkey)))
+
+(defn run-round [monkeys]
+  (println "Starting round")
+  (reduce (fn [[monkeys inspect-counts] i]
+            (let [monkey (nth monkeys i)
+                  monkeys (run-turn monkey monkeys)]
+              [monkeys (conj inspect-counts (count (:items monkey)))]))
+          [monkeys []]
+          (range (count monkeys))))
+
+(defn run [monkeys]
+  (->> (range)
+       (reductions (fn [[monkeys _] _]
+                     (run-round monkeys))
+                   [monkeys nil])
+       (drop 1)
+       (map second)))
+
+(defn inspected [monkeys]
+  (->> monkeys
+       run
+       (take 20)
+       (reduce (partial mapv +)
+               (mapv (constantly 0) monkeys))))
+
 (defn monkey-business-20 [monkeys]
-  (throw (RuntimeException. "Not yet implemented")))
+  (let [inspect-counts (inspected monkeys)]
+    (->> inspect-counts
+         sort
+         reverse
+         (take 2)
+         (apply *))))
 
 (defn -main []
   (let [monkeys (read-input)]
