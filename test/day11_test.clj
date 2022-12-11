@@ -16,8 +16,8 @@
    {:items [79 60 97]
     :operation '(* old old)
     :test {:divisor 13
-           :true 1
-           :false 3}}
+           true 1
+           false 3}}
    {:items [74]
     :operation '(+ old 3)
     :test {:divisor 17
