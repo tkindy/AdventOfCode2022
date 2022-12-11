@@ -18,11 +18,12 @@
     (parse-long arg)))
 
 (defn parse-operation [input]
-  (let [[_ expression] (re-find #"Operation: new = (.*?)\n" input)
-        [left op right] (str/split expression #" ")]
-    (list (parse-op op)
-          (parse-arg left)
-          (parse-arg right))))
+  (let [[_ expression] (re-find #"Operation: new = old (.*?)\n" input)
+        [op arg] (str/split expression #" ")
+        op (parse-op op)
+        arg (parse-arg arg)
+        arg-fn #(if (= arg 'old) % arg)]
+    (fn [old] (op old (arg-fn old)))))
 
 (defn parse-divisor [input]
   (let [[_ divisor] (re-find #"Test: divisible by (\d+)" input)]
@@ -53,11 +54,7 @@
   (parse-input (slurp "inputs/day11.txt")))
 
 (defn inspect-item [item {:keys [operation]}]
-  (->> operation
-       (map (fn [a] (if (= a 'old)
-                      item
-                      a)))
-       eval))
+  (operation item))
 
 (defn test-item [item {:keys [test]}]
   (let [{:keys [divisor]} test
@@ -98,7 +95,7 @@
   (let [lcm (divisor-lcm monkeys)]
     (->> (range)
          (reductions (fn [[monkeys _] i]
-                       (println "Round" i)
+                       #_(println "Round" i)
                        (run-round monkeys item-fn lcm))
                      [monkeys nil])
          (drop 1)
