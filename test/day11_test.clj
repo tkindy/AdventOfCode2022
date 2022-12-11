@@ -28,10 +28,10 @@
   (is (= (day11/parse-input (slurp "examples/day11.txt"))
          example)))
 
-(deftest monkey-business-20
-  (is (= (day11/monkey-business-20 example)
+(deftest small-monkey-business
+  (is (= (day11/small-monkey-business example)
          10605)))
 
-(deftest updated-monkey-business
-  (is (= (day11/updated-monkey-business example)
+(deftest big-monkey-business
+  (is (= (day11/big-monkey-business example)
          2713310158)))

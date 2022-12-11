@@ -108,17 +108,17 @@
          (take 2)
          (apply *))))
 
-(defn monkey-business-20 [monkeys]
+(defn small-monkey-business [monkeys]
   (monkey-business monkeys
                    20
                    (fn [item] (unchecked-divide-int item 3))))
 
-(defn updated-monkey-business [monkeys]
+(defn big-monkey-business [monkeys]
   (monkey-business monkeys
                    10000
                    identity))
 
 (defn -main []
   (let [monkeys (read-input)]
-    (println "Part 1:" (monkey-business-20 monkeys))
-    (println "Part 2:" (updated-monkey-business monkeys))))
+    (println "Part 1:" (small-monkey-business monkeys))
+    (println "Part 2:" (big-monkey-business monkeys))))
