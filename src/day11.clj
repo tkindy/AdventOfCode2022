@@ -7,7 +7,7 @@
 (defn parse-items [input]
   (let [[_ numbers] (re-find #"Starting items: (.*?)\n" input)]
     (->> (str/split numbers #", ")
-         (mapv parse-long))))
+         (map parse-long))))
 
 (defn parse-op [op]
   (symbol op))
@@ -70,8 +70,8 @@
         item (mod item lcm)
         destination (test-item item monkey)]
     (-> monkeys
-        (update-in [destination :items] conj item)
-        (update-in [monkey-id :items] (fn [items] (subvec items 1))))))
+        (update-in [destination :items] concat [item])
+        (update-in [monkey-id :items] rest))))
 
 (defn run-turn [monkey i monkeys item-fn lcm]
   (reduce (fn [monkeys item]
@@ -97,7 +97,8 @@
 (defn run [monkeys item-fn]
   (let [lcm (divisor-lcm monkeys)]
     (->> (range)
-         (reductions (fn [[monkeys _] _]
+         (reductions (fn [[monkeys _] i]
+                       (println "Round" i)
                        (run-round monkeys item-fn lcm))
                      [monkeys nil])
          (drop 1)
