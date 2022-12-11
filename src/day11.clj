@@ -10,7 +10,9 @@
          (map parse-long))))
 
 (defn parse-op [op]
-  (symbol op))
+  (case op
+    "*" *
+    "+" +))
 
 (defn parse-arg [arg]
   (if (= arg "old")
@@ -21,9 +23,10 @@
   (let [[_ expression] (re-find #"Operation: new = old (.*?)\n" input)
         [op arg] (str/split expression #" ")
         op (parse-op op)
-        arg (parse-arg arg)
-        arg-fn #(if (= arg 'old) % arg)]
-    (fn [old] (op old (arg-fn old)))))
+        arg (parse-arg arg)]
+    (fn [old] (op old (if (= arg 'old)
+                        old
+                        arg)))))
 
 (defn parse-divisor [input]
   (let [[_ divisor] (re-find #"Test: divisible by (\d+)" input)]

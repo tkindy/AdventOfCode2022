@@ -24,6 +24,10 @@
            true 0
            false 1}}])
 
+(deftest parse-operation
+  (is (= ((day11/parse-operation "Operation: new = old + 3\n") 4)
+         7)))
+
 (defn strip-operations [monkeys]
   (mapv (fn [monkey]
           (dissoc monkey :operation))
