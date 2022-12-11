@@ -31,3 +31,7 @@
 (deftest monkey-business-20
   (is (= (day11/monkey-business-20 example)
          10605)))
+
+(deftest updated-monkey-business
+  (is (= (day11/updated-monkey-business example)
+         2713310158)))
