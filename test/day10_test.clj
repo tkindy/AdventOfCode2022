@@ -6,9 +6,9 @@
 
 (deftest parse-input
   (is (= (day10/parse-input "noop\naddx 3\naddx -5\n")
-         [{:instruction :noop}
-          {:instruction :addx, :arg 3}
-          {:instruction :addx, :arg -5}])))
+         [{:opcode :noop}
+          {:opcode :addx, :arg 3}
+          {:opcode :addx, :arg -5}])))
 
 (deftest interesting-signals-sum
   (is (= (day10/interesting-signals-sum example)
