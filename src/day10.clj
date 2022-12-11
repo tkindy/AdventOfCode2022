@@ -17,8 +17,33 @@
 (defn read-input []
   (parse-input (slurp "inputs/day10.txt")))
 
+(defn evaluate-one [x {:keys [opcode arg]}]
+  (case opcode
+    :noop [x]
+    :addx [x (+ x arg)]))
+
+(defn evaluate-step [[x xs] instruction]
+  (let [new-xs (evaluate-one x instruction)]
+    [(last new-xs) (concat xs new-xs)]))
+
+(defn evaluate [program]
+  (second (reduce evaluate-step
+                  [1 '(1)]
+                  program)))
+
+(defn signals [program]
+  (->> program
+       evaluate
+       (map-indexed (fn [i x] (* (inc i) x)))))
+
+(defn interesting-signals [program]
+  (->> program
+       signals
+       (drop 19)
+       (take-nth 40)))
+
 (defn interesting-signals-sum [program]
-  (throw (RuntimeException. "Not yet implemented")))
+  (apply + (interesting-signals program)))
 
 (defn -main []
   (let [program (read-input)]
