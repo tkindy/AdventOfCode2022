@@ -1,6 +1,7 @@
 (ns day10-test
   (:require day10
-            [clojure.test :refer [deftest is are]]))
+            [clojure.test :refer [deftest is are]]
+            [clojure.string :as str]))
 
 (def small-example (day10/parse-input "noop\naddx 3\naddx -5\n"))
 (def example (day10/parse-input (slurp "examples/day10.txt")))
@@ -26,3 +27,7 @@
 (deftest interesting-signals-sum
   (is (= (day10/interesting-signals-sum example)
          13140)))
+
+(deftest render
+  (is (= (day10/render example)
+         (str/trim (slurp "examples/day10-rendered.txt")))))

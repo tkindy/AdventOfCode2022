@@ -45,6 +45,10 @@
 (defn interesting-signals-sum [program]
   (apply + (interesting-signals program)))
 
+(defn render [program]
+  "")
+
 (defn -main []
   (let [program (read-input)]
-    (println "Part 1:" (interesting-signals-sum program))))
+    (println "Part 1:" (interesting-signals-sum program))
+    (println "Part 2:" (render program))))
