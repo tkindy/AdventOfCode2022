@@ -64,24 +64,24 @@
         result (zero? (mod item divisor))]
     (get test result)))
 
-(defn handle-item [item monkey monkeys]
+(defn handle-item [item monkey monkey-id monkeys]
   (let [item (inspect-item item monkey)
         item (unchecked-divide-int item 3)
         destination (test-item item monkey)]
-    (update-in monkeys [destination :items] conj item)))
+    (-> monkeys
+        (update-in [destination :items] conj item)
+        (update-in [monkey-id :items] (fn [items] (subvec items 1))))))
 
-(defn run-turn [monkey monkeys]
-  (println "Starting turn")
+(defn run-turn [monkey i monkeys]
   (reduce (fn [monkeys item]
-            (handle-item item monkey monkeys))
+            (handle-item item monkey i monkeys))
           monkeys
           (:items monkey)))
 
 (defn run-round [monkeys]
-  (println "Starting round")
   (reduce (fn [[monkeys inspect-counts] i]
             (let [monkey (nth monkeys i)
-                  monkeys (run-turn monkey monkeys)]
+                  monkeys (run-turn monkey i monkeys)]
               [monkeys (conj inspect-counts (count (:items monkey)))]))
           [monkeys []]
           (range (count monkeys))))
