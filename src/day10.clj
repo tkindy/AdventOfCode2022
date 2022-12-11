@@ -45,10 +45,26 @@
 (defn interesting-signals-sum [program]
   (apply + (interesting-signals program)))
 
+(defn render-one [image [i x]]
+  (let [crt-pos (mod i 40)
+        newline (if (and (> i 0)
+                         (zero? crt-pos))
+                  "\n"
+                  "")
+        drawn (if (<= (dec x) crt-pos (inc x))
+                "#"
+                ".")]
+    (str image newline drawn)))
+
 (defn render [program]
-  "")
+  (->> program
+       evaluate
+       (map-indexed vector)
+       (take 240)
+       (reduce render-one "")))
 
 (defn -main []
   (let [program (read-input)]
     (println "Part 1:" (interesting-signals-sum program))
-    (println "Part 2:" (render program))))
+    (println "Part 2:")
+    (println (render program))))
