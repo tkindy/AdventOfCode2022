@@ -64,35 +64,44 @@
         result (zero? (mod item divisor))]
     (get test result)))
 
-(defn handle-item [item monkey monkey-id monkeys item-fn]
+(defn handle-item [item monkey monkey-id monkeys item-fn lcm]
   (let [item (inspect-item item monkey)
         item (item-fn item)
+        item (mod item lcm)
         destination (test-item item monkey)]
     (-> monkeys
         (update-in [destination :items] conj item)
         (update-in [monkey-id :items] (fn [items] (subvec items 1))))))
 
-(defn run-turn [monkey i monkeys item-fn]
+(defn run-turn [monkey i monkeys item-fn lcm]
   (reduce (fn [monkeys item]
-            (handle-item item monkey i monkeys item-fn))
+            (handle-item item monkey i monkeys item-fn lcm))
           monkeys
           (:items monkey)))
 
-(defn run-round [monkeys item-fn]
+(defn run-round [monkeys item-fn lcm]
   (reduce (fn [[monkeys inspect-counts] i]
             (let [monkey (nth monkeys i)
-                  monkeys (run-turn monkey i monkeys item-fn)]
+                  monkeys (run-turn monkey i monkeys item-fn lcm)]
               [monkeys (conj inspect-counts (count (:items monkey)))]))
           [monkeys []]
           (range (count monkeys))))
 
+(defn divisor-lcm [monkeys]
+  (->> monkeys
+       (map (comp :divisor :test))
+
+       ; all primes, so the LCM is their product
+       (apply *)))
+
 (defn run [monkeys item-fn]
-  (->> (range)
-       (reductions (fn [[monkeys _] _]
-                     (run-round monkeys item-fn))
-                   [monkeys nil])
-       (drop 1)
-       (map second)))
+  (let [lcm (divisor-lcm monkeys)]
+    (->> (range)
+         (reductions (fn [[monkeys _] _]
+                       (run-round monkeys item-fn lcm))
+                     [monkeys nil])
+         (drop 1)
+         (map second))))
 
 (defn inspected [monkeys rounds item-fn]
   (->> (run monkeys item-fn)
