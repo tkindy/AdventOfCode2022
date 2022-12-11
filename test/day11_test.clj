@@ -1,6 +1,6 @@
 (ns day11-test
   (:require day11
-            [clojure.test :refer [deftest is]]))
+            [clojure.test :refer [deftest is are]]))
 
 (def example
   [{:items [79 98]
@@ -32,6 +32,18 @@
 (deftest parse-input
   (is (= (strip-operations (day11/parse-input (slurp "examples/day11.txt")))
          (strip-operations example))))
+
+(deftest inspected
+  (are [rounds expected] (= (day11/inspected example rounds identity)
+                            expected)
+    1 [2 4 3 6]
+    20 [99 97 8 103]
+    1000 [5204 4792 199 5192]
+    2000 [10419 9577 392 10391]
+    3000 [15638 14358 587 15593]
+    4000 [20858 19138 780 20797]
+    5000 [26075 23921 974 26000]
+    6000 [31294 28702 1165 31204]))
 
 (deftest small-monkey-business
   (is (= (day11/small-monkey-business example)
