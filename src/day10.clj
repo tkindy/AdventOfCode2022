@@ -59,8 +59,8 @@
 (defn render [program]
   (->> program
        evaluate
-       (map-indexed vector)
        (take 240)
+       (map-indexed vector)
        (reduce render-one "")))
 
 (defn -main []
