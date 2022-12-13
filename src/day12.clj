@@ -101,24 +101,29 @@
 
 (defn next-node [unvisited distances]
   (->> unvisited
-       (apply min-key (fn [node] (:distance (distances node))))))
+       (map (juxt identity (comp :distance distances)))
+       (apply min-key second)))
 
-(defn shortest-path [{:keys [start end heightmap] :as state}]
+(defn shortest-distances [{:keys [start heightmap] :as state}]
   (loop [unvisited (build-unvisited heightmap)
          distances (build-distances state)
          current   start]
     (let [neighbors (unvisited-neighbors current heightmap unvisited)
           distances (update-distances current neighbors distances)
           unvisited (disj unvisited current)]
-      (if (= current end)
-        (build-path distances start end)
-        (recur unvisited distances (next-node unvisited distances))))))
+      (if (empty? unvisited)
+        distances
+        (let [[next-node distance] (next-node unvisited distances)]
+          (if (= distance ##Inf)
+            distances
+            (recur unvisited distances next-node)))))))
 
-(defn shortest-path-distance [state]
-  (-> state
-      shortest-path
-      count
-      dec))
+(defn shortest-path-distance [{:keys [start end] :as state}]
+  (let [distances (shortest-distances state)
+        path (build-path distances start end)]
+    (-> path
+        count
+        dec)))
 
 (defn all-lowest [heightmap]
   (->> heightmap
