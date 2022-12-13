@@ -98,12 +98,14 @@
           neighbors))
 
 (defn build-path [distances start end]
-  (loop [current end, path '()]
-    (let [path (conj path current)]
-      (if (= current start)
-        path
-        (recur (:from (distances current))
-               path)))))
+  (if (= (:distance (distances end)) ##Inf)
+    nil
+    (loop [current end, path '()]
+      (let [path (conj path current)]
+        (if (= current start)
+          path
+          (recur (:from (distances current))
+                 path))))))
 
 (defn next-node [unvisited distances]
   (->> unvisited
@@ -142,7 +144,8 @@
                                       legal-backwards-neighbor?)]
     (->> heightmap
          all-lowest
-         (map (partial build-path distances end)))))
+         (map (partial build-path distances end))
+         (filter identity))))
 
 (defn any-start-shortest-distance [state]
   (->> state
