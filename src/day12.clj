@@ -61,23 +61,29 @@
 (defn get-height [{:keys [x y]} heightmap]
   (get-in heightmap [y x]))
 
-(defn legal-neighbor? [candidate height heightmap]
+(defn legal-neighbor-helper [candidate heightmap comparison]
   (let [candidate-height (get-height candidate heightmap)]
     (and candidate-height
-         (<= candidate-height (inc height)))))
+         (comparison candidate-height))))
 
-(defn neighbors [{:keys [x y] :as node} heightmap]
+(defn legal-neighbor? [candidate height heightmap]
+  (legal-neighbor-helper candidate heightmap #(<= % (inc height))))
+
+(defn legal-backwards-neighbor? [candidate height heightmap]
+  (legal-neighbor-helper candidate heightmap #(>= % (dec height))))
+
+(defn neighbors [{:keys [x y] :as node} heightmap good-neighbor?]
   (let [height (get-height node heightmap)
         candidates [{:x x, :y (dec y)}
                     {:x x, :y (inc y)}
                     {:x (dec x), :y y}
                     {:x (inc x), :y y}]]
     (filter (fn [candidate]
-              (legal-neighbor? candidate height heightmap))
+              (good-neighbor? candidate height heightmap))
             candidates)))
 
-(defn unvisited-neighbors [current heightmap unvisited]
-  (->> (neighbors current heightmap)
+(defn unvisited-neighbors [current heightmap unvisited good-neighbor?]
+  (->> (neighbors current heightmap good-neighbor?)
        (filter unvisited)))
 
 (defn update-distances [current neighbors distances]
@@ -104,11 +110,11 @@
        (map (juxt identity (comp :distance distances)))
        (apply min-key second)))
 
-(defn shortest-distances [{:keys [start heightmap] :as state}]
+(defn shortest-distances [{:keys [start heightmap] :as state} good-neighbor?]
   (loop [unvisited (build-unvisited heightmap)
          distances (build-distances state)
          current   start]
-    (let [neighbors (unvisited-neighbors current heightmap unvisited)
+    (let [neighbors (unvisited-neighbors current heightmap unvisited good-neighbor?)
           distances (update-distances current neighbors distances)
           unvisited (disj unvisited current)]
       (if (empty? unvisited)
@@ -119,7 +125,7 @@
             (recur unvisited distances next-node)))))))
 
 (defn shortest-path-distance [{:keys [start end] :as state}]
-  (let [distances (shortest-distances state)
+  (let [distances (shortest-distances state legal-neighbor?)
         path (build-path distances start end)]
     (-> path
         count
@@ -131,13 +137,21 @@
        (filter (fn [node]
                  (zero? (get-height node heightmap))))))
 
-(defn any-start-shortest [{:keys [heightmap] :as state}]
-  (->> (all-lowest heightmap)
-       (map (partial assoc state :start))
-       (map shortest-path-distance)
-       (apply min)))
+(defn any-start-shortest [{:keys [end heightmap]}]
+  (let [distances (shortest-distances {:start end, :heightmap heightmap}
+                                      legal-backwards-neighbor?)]
+    (->> heightmap
+         all-lowest
+         (map (partial build-path distances end)))))
+
+(defn any-start-shortest-distance [state]
+  (->> state
+       any-start-shortest
+       (map count)
+       (apply min)
+       dec))
 
 (defn -main []
   (let [state (read-input)]
     (println "Part 1:" (shortest-path-distance state))
-    (println "Part 2:" (any-start-shortest state))))
+    (println "Part 2:" (any-start-shortest-distance state))))
