@@ -31,3 +31,7 @@
 (deftest shortest-path-distance
   (is (= (day12/shortest-path-distance example)
          31)))
+
+(deftest any-start-shortest
+  (is (= (day12/any-start-shortest example)
+         29)))

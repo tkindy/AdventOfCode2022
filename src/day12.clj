@@ -120,6 +120,19 @@
       count
       dec))
 
+(defn all-lowest [heightmap]
+  (->> heightmap
+       grid->coords
+       (filter (fn [node]
+                 (zero? (get-height node heightmap))))))
+
+(defn any-start-shortest [{:keys [heightmap] :as state}]
+  (->> (all-lowest heightmap)
+       (map (partial assoc state :start))
+       (map shortest-path-distance)
+       (apply min)))
+
 (defn -main []
   (let [state (read-input)]
-    (println "Part 1:" (shortest-path-distance state))))
+    (println "Part 1:" (shortest-path-distance state))
+    (println "Part 2:" (any-start-shortest state))))
