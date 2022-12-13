@@ -1,7 +1,20 @@
-(ns day12)
+(ns day12
+  (:require [clojure.string :as str]))
+
+(defn parse-height [c]
+  (case c
+    \S 0
+    \E 25
+    (- (int c) (int \a))))
+
+(defn parse-line [line]
+  (mapv parse-height line))
 
 (defn parse-input [input]
-  (throw (RuntimeException. "Not yet implemented")))
+  (->> input
+       str/trim
+       str/split-lines
+       (mapv parse-line)))
 
 (defn read-input []
   (parse-input (slurp "inputs/day12.txt")))
